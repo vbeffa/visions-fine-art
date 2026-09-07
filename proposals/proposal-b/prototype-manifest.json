@@ -1,0 +1,36 @@
+{
+  "source": "visions_site repaired extraction v1.3",
+  "selected_artists": [
+    "Abigail Allan",
+    "Alexei Butirskiy",
+    "Chad Awalt",
+    "Eyvind Earle",
+    "Gaylord Ho",
+    "H. Leung",
+    "Hu Jun Di",
+    "Jia Lu",
+    "John Gleadow",
+    "Karen Ehart",
+    "Lisa Fitzgibbons",
+    "M&I Garmash",
+    "Marty Goldstein",
+    "Nano Lopez",
+    "Pino",
+    "Robert Kuster",
+    "Sandro Del-Prete",
+    "Terry Gilecki",
+    "Thomas Arvid",
+    "Ulla Darni"
+  ],
+  "artist_count": 20,
+  "artwork_count": 622,
+  "themes": [
+    "heritage",
+    "musea",
+    "virtual-tour"
+  ],
+  "assets_copied": 1228,
+  "missing_source_assets": [
+    "https://www.visionsfineart.com/earle/images/work.jpg"
+  ]
+}
