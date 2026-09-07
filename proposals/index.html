@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Visions Fine Art — Website Proposals</title>
+<style>
+:root{
+  --bg:#f4efe9;
+  --paper:#fff;
+  --ink:#2a211d;
+  --muted:#756963;
+  --line:#ddd2ca;
+  --accent:#763d35;
+  --accent-dark:#552720;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  min-height:100%;
+  font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--ink);
+  background:linear-gradient(180deg,#f8f4ef 0%,#efe6de 100%);
+}
+a{color:inherit}
+.topbar{
+  background:#050505;
+  color:#fff;
+  text-align:center;
+  font-size:12px;
+  font-weight:650;
+  letter-spacing:.055em;
+  padding:8px 14px;
+}
+.wrap{
+  width:min(1120px,calc(100% - 36px));
+  margin:auto;
+}
+.hero{
+  padding:64px 0 42px;
+  border-bottom:1px solid var(--line);
+}
+.eyebrow{
+  margin:0 0 8px;
+  color:var(--accent);
+  font-size:12px;
+  font-weight:750;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+}
+h1,h2{
+  font-family:Georgia,serif;
+  font-weight:500;
+}
+h1{
+  margin:0;
+  font-size:clamp(2.6rem,6vw,4.9rem);
+  line-height:1;
+  letter-spacing:-.025em;
+}
+.lead{
+  max-width:760px;
+  margin:18px 0 0;
+  color:var(--muted);
+  font-size:1.08rem;
+  line-height:1.7;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:20px;
+  padding:36px 0 48px;
+}
+.card{
+  display:flex;
+  flex-direction:column;
+  min-height:370px;
+  padding:26px;
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:20px;
+  box-shadow:0 14px 36px rgba(57,42,34,.07);
+}
+.card .number{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#f3e7e3;
+  color:var(--accent);
+  font-weight:800;
+  font-size:13px;
+  margin-bottom:18px;
+}
+.card h2{
+  margin:0;
+  font-size:1.7rem;
+}
+.card .subtitle{
+  margin:7px 0 0;
+  color:var(--accent);
+  font-size:.78rem;
+  font-weight:750;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.card p{
+  color:var(--muted);
+  line-height:1.6;
+  margin:18px 0 0;
+}
+.card ul{
+  padding-left:18px;
+  margin:16px 0 0;
+  color:var(--muted);
+  line-height:1.6;
+  font-size:.93rem;
+}
+.card .button{
+  margin-top:auto;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  padding:10px 14px;
+  border-radius:10px;
+  background:var(--accent);
+  color:#fff;
+  text-decoration:none;
+  font-weight:750;
+  font-size:.9rem;
+}
+.card .button:hover{background:var(--accent-dark)}
+.footer{
+  border-top:1px solid var(--line);
+  padding:22px 0 42px;
+  color:var(--muted);
+  font-size:.86rem;
+}
+@media(max-width:880px){
+  .grid{grid-template-columns:1fr}
+  .card{min-height:0}
+}
+
+.price{
+  margin:15px 0 0;
+  padding:12px 13px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:#faf7f4;
+}
+.price strong{
+  display:block;
+  color:var(--accent);
+  font-size:1.2rem;
+  line-height:1.2;
+}
+.price span{
+  display:block;
+  margin-top:4px;
+  color:var(--muted);
+  font-size:.8rem;
+  line-height:1.45;
+}
+</style>
+</head>
+<body>
+<div class="topbar">Visions Fine Art — Website Proposals</div>
+<header class="hero">
+<div class="wrap">
+<p class="eyebrow">Visions Fine Art Gallery</p>
+<h1>Website proposals</h1>
+<p class="lead">
+      Three separate options for modernizing and maintaining the Visions Fine Art website.
+      Each proposal can be reviewed independently.
+    </p>
+</div>
+</header>
+<main class="wrap">
+<section class="grid">
+<article class="card">
+<div class="number">A</div>
+<h2>Hosting Migration</h2>
+<p class="subtitle">Move the existing site</p><div class="price"><strong>$55/hour</strong><span>Estimated 4–7 hours · approximately $220–$385 for a straightforward migration.</span></div>
+<p>
+        Migrate the current Visions website to a modern hosting environment while preserving
+        the existing design and content.
+      </p>
+<ul>
+<li>Hosting and DNS review</li>
+<li>Backup and transfer</li>
+<li>SSL and cutover</li>
+<li>Testing and troubleshooting</li>
+</ul>
+<a class="button" href="proposal-a/index.html">View Proposal A</a>
+</article>
+<article class="card">
+<div class="number">B</div>
+<h2>Website Redesign</h2>
+<p class="subtitle">Choose a new visual direction</p><div class="price"><strong>$495–$645</strong><span>Fixed price depending on selected redesign: Heritage $495 · Musea $595 · Virtual Tour $645.</span></div>
+<p>
+        Review three working redesign concepts using real Visions artists, artwork, and
+        gallery content.
+      </p>
+<ul>
+<li>Heritage Luxury</li>
+<li>Musea Art Gallery</li>
+<li>Virtual Tour</li>
+<li>Complete site redesign options</li>
+</ul>
+<a class="button" href="proposal-b/index.html">View Proposal B</a>
+</article>
+<article class="card">
+<div class="number">C</div>
+<h2>Website Management Portal</h2>
+<p class="subtitle">Edit the site without HTML</p><div class="price"><strong>$500–$1,500</strong><span>Preliminary production range. Final price depends on hosting, deployment, backup/rollback, and integration requirements.</span></div>
+<p>
+        A working administrative prototype for managing artists, artwork, images, homepage
+        content, and basic site information.
+      </p>
+<ul>
+<li>Full 42-artist / 875-artwork catalog</li>
+<li>Edit and preview changes</li>
+<li>Browser-local Publish Preview</li>
+<li>Production integration scoped separately</li>
+</ul>
+<p></p>
+<a class="button" href="proposal-c/index.html">View Proposal C</a>
+</article>
+</section>
+</main>
+<footer class="footer">
+<div class="wrap">Visions Fine Art Gallery · Website Proposals</div>
+</footer>
+</body>
+</html>
