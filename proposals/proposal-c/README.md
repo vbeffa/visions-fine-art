@@ -15,6 +15,7 @@ Static GitHub Pages prototype.
 - Image replacement
 - Available / Sold / Hidden status
 - Site info and general page editing
+- Homepage content editing, including featured artists
 - Search and pagination for the complete catalog
 
 ## GitHub Pages
@@ -44,3 +45,20 @@ This demonstrates the production workflow while keeping GitHub Pages completely 
 ## Production boundary
 
 A real production version would require validation of the hosting environment, full backup/rollback, a verified structured-site regeneration process, authentication, persistent shared storage, and a tested deployment mechanism.
+
+`Publish Preview` is disabled until at least one saved change is waiting to be published.
+
+
+## Local file testing
+
+The full live preview now works when opened from the admin portal with `file://`.
+The admin page passes the last published snapshot to the live-preview tab.
+
+For the most production-like behavior, you can also serve the folder locally:
+
+```bash
+cd proposal-c
+python -m http.server 8000
+```
+
+Then open `http://localhost:8000/`.

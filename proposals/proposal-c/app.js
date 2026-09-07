@@ -1,8 +1,8 @@
 (() => {
 "use strict";
 
-const DRAFT_KEY="visions-proposal-c-draft-v2";
-const PUBLISHED_KEY="visions-proposal-c-published-v2";
+const DRAFT_KEY="visions-proposal-c-draft-v3";
+const PUBLISHED_KEY="visions-proposal-c-published-v3";
 const baseline=window.VISIONS_FULL_DATA;
 const clone=o=>JSON.parse(JSON.stringify(o));
 const $=(s,r=document)=>r.querySelector(s);
@@ -33,6 +33,19 @@ function persist(){
 function publishedState(){
   try{const s=localStorage.getItem(PUBLISHED_KEY);return s?JSON.parse(s):null}catch{return null}
 }
+// Local file:// pages do not reliably share localStorage. When the full live
+// preview is opened from this admin tab, it can request the browser-local
+// published state through window.postMessage instead.
+window.addEventListener("message",event=>{
+  if(event.data?.type!=="visions-request-published-state"||!event.source)return;
+  const published=publishedState()||clone(baseline);
+  try{
+    event.source.postMessage(
+      {type:"visions-published-state",state:published},
+      "*"
+    );
+  }catch{}
+});
 function esc(v=""){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 function slug(v=""){return v.toLowerCase().replace(/&/g,"and").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"item"}
 function artist(id){return state.artists.find(a=>a.id===id)}
@@ -49,16 +62,22 @@ function updatePending(){
   const n=state.meta.unpublishedChanges||0;
   pendingPill.textContent=n?`${n} unpublished change${n===1?"":"s"}`:"No unpublished changes";
   pendingPill.classList.toggle("has-changes",!!n);
+  const publish=$("#publishButton");
+  if(publish){
+    publish.disabled=!n;
+    publish.title=n?"Publish saved changes to the browser-local live preview":"There are no unpublished changes";
+  }
 }
 function navigate(section){
   ui.section=section;ui.draft=null;ui.editingArtistId=null;ui.editingArtworkId=null;ui.editingPageId=null;
   ui.search="";ui.artistFilter="all";ui.artworkPage=1;ui.imagePage=1;
   $$(".nav-item").forEach(b=>b.classList.toggle("active",b.dataset.section===section));
-  sectionTitle.textContent={dashboard:"Dashboard",artists:"Artists",artworks:"Artworks",site:"Site Information",pages:"Pages",images:"Image Library"}[section];
+  sectionTitle.textContent={dashboard:"Dashboard",homepage:"Homepage",artists:"Artists",artworks:"Artworks",site:"Site Information",pages:"Pages",images:"Image Library"}[section];
   render();
 }
 function render(){
   if(ui.section==="dashboard")renderDashboard();
+  if(ui.section==="homepage")renderHomepage();
   if(ui.section==="artists")renderArtists();
   if(ui.section==="artworks")renderArtworks();
   if(ui.section==="site")renderSite();
@@ -108,6 +127,53 @@ function renderDashboard(){
       <div class="activity-list">${(state.meta.activity||[]).map(x=>`<div class="activity-row">${esc(x)}</div>`).join("")}</div>
     </section>`;
 }
+function renderHomepage(){
+  ui.previewKind="homepage-draft";
+  if(!ui.draft||ui.draft.entity!=="homepage"){
+    ui.draft={entity:"homepage",...clone(state.homepage||{})};
+    ui.draft.featuredArtistIds=[...(ui.draft.featuredArtistIds||[])];
+  }
+  const d=ui.draft;
+  workspace.innerHTML=`<section class="panel">
+    <div class="panel-header"><div><h2>Homepage content</h2><p>Edit the main text and choose which artists appear in the featured section.</p></div></div>
+    <form id="homepageForm">
+      <div class="form-grid">
+        <div class="field wide"><label>Hero eyebrow</label><input name="eyebrow" value="${esc(d.eyebrow||"")}"></div>
+        <div class="field wide"><label>Hero headline</label><input name="headline" value="${esc(d.headline||"")}"></div>
+        <div class="field wide"><label>Hero introduction</label><textarea name="intro">${esc(d.intro||"")}</textarea></div>
+        <div class="field"><label>Artists eyebrow</label><input name="artistsEyebrow" value="${esc(d.artistsEyebrow||"")}"></div>
+        <div class="field"><label>Artists heading</label><input name="artistsHeading" value="${esc(d.artistsHeading||"")}"></div>
+        <div class="field wide"><label>Artists introduction</label><textarea name="artistsIntro">${esc(d.artistsIntro||"")}</textarea></div>
+        <div class="field wide">
+          <label>Featured artists</label>
+          <div class="featured-list">
+            ${state.artists.map(a=>`<label class="featured-option"><input type="checkbox" class="featured-artist" value="${a.id}" ${(d.featuredArtistIds||[]).includes(a.id)?"checked":""}> ${esc(a.name)}</label>`).join("")}
+          </div>
+          <small>Select the artists to feature on the homepage. The preview shows up to 12.</small>
+        </div>
+      </div>
+      <div class="form-actions"><button class="btn primary">Save Homepage</button></div>
+    </form>
+  </section>`;
+
+  bindDraft($("#homepageForm"),["eyebrow","headline","intro","artistsEyebrow","artistsHeading","artistsIntro"]);
+
+  $$(".featured-artist",workspace).forEach(cb=>cb.addEventListener("change",()=>{
+    d.featuredArtistIds=$$(".featured-artist",workspace).filter(x=>x.checked).map(x=>x.value);
+    previewStatus.textContent="Unsaved preview";
+    renderPreview();
+  }));
+
+  $("#homepageForm")?.addEventListener("submit",e=>{
+    e.preventDefault();
+    state.homepage=cleanEntity(d);
+    recordChange("Updated homepage content");
+    showToast("Homepage saved.");
+    ui.draft=null;
+    render();
+  });
+}
+
 function renderArtists(){
   if(ui.editingArtistId!==null||ui.draft?.entity==="artist"){renderArtistEditor();return}
   ui.previewKind="artist";
@@ -286,19 +352,27 @@ function renderPreview(){
   }else if(ui.previewKind==="artist"||ui.previewKind==="artist-draft"){
     const a=ui.previewKind==="artist-draft"?ui.draft:(artist(ui.selectedArtistId)||state.artists[0]),works=worksFor(a.id).filter(w=>w.status!=="hidden").slice(0,3);
     body=`${unsaved}<div class="site-head"><div class="site-brand">${esc(site.galleryName)}</div><div class="site-nav"><span>Artists</span><span>Our Guarantee</span><span>Contact</span></div></div><div class="site-body"><div class="site-artist-hero"><img src="${esc(a.image||"assets/placeholder.svg")}" alt=""><div><div class="site-kicker">Featured artist</div><h2>${esc(a.name||"Artist Name")}</h2><p>${esc((a.bio||"").slice(0,520))}${(a.bio||"").length>520?"…":""}</p></div></div><div class="site-mini-grid">${works.map(w=>`<div class="site-mini-card"><img src="${esc(w.thumbnail||w.image)}" alt=""><span>${esc(w.title)}</span></div>`).join("")}</div></div>`;
-  }else if(ui.previewKind==="site-draft"){
+  }else if(ui.previewKind==="homepage-draft"){
+    const h=ui.draft||state.homepage||{},ids=h.featuredArtistIds||[],featured=ids.map(id=>artist(id)).filter(a=>a&&a.active).slice(0,12);
+    body=`${unsaved}<div class="site-head"><div class="site-brand">${esc(site.galleryName)}</div><div class="site-nav"><span>Artists</span><span>Our Guarantee</span><span>Contact</span></div></div>
+      <div class="site-home-hero"><div class="site-kicker">${esc(h.eyebrow||"")}</div><h2>${esc(h.headline||"")}</h2><p>${esc(h.intro||"")}</p></div>
+      <div class="site-body"><div class="site-kicker">${esc(h.artistsEyebrow||"Artists")}</div><h3>${esc(h.artistsHeading||"Explore the collection")}</h3><p>${esc(h.artistsIntro||"")}</p>
+      <div class="site-home-artists">${featured.slice(0,3).map(a=>`<div><img src="${esc(a.image)}" alt=""><h3>${esc(a.name)}</h3></div>`).join("")}</div></div>`;
+}else if(ui.previewKind==="site-draft"){
     body=`${unsaved}<div class="site-head"><div class="site-brand">${esc(site.galleryName)}</div></div><div class="site-body"><div class="site-kicker">Visit the gallery</div><h2>Contact & Location</h2><div class="site-info-card"><h3>${esc(site.galleryName)}</h3><p>${esc(site.address)}<br>${esc(site.cityStateZip)}</p><p>${esc(site.phone)} · ${esc(site.tollFree)}<br>${esc(site.email)}</p><p><strong>Hours:</strong> ${esc(site.hours)}</p></div></div>`;
   }else if(ui.previewKind==="page"||ui.previewKind==="page-draft"){
     const p=ui.previewKind==="page-draft"?ui.draft:(state.pages.find(x=>x.id===ui.selectedPageId)||state.pages[0]);
     body=`${unsaved}<div class="site-head"><div class="site-brand">${esc(site.galleryName)}</div></div><div class="site-body"><div class="site-kicker">Gallery information</div><h2>${esc(p.title)}</h2><p>${esc((p.body||"").slice(0,1600))}</p></div>`;
   }else{
-    const featured=state.artists.filter(a=>a.active).slice(0,3);body=`<div class="site-head"><div class="site-brand">${esc(site.galleryName)}</div><div class="site-nav"><span>Artists</span><span>Our Guarantee</span><span>Contact</span></div></div><div class="site-home-hero"><div class="site-kicker">Sedona · Arizona</div><h2>Fine art in the heart of Sedona.</h2><p>Explore artists and artwork represented by Visions Fine Art Gallery.</p></div><div class="site-body"><div class="site-kicker">Featured artists</div><div class="site-home-artists">${featured.map(a=>`<div><img src="${esc(a.image)}" alt=""><h3>${esc(a.name)}</h3></div>`).join("")}</div></div>`;
+    const h=state.homepage||{},ids=h.featuredArtistIds||[],featured=(ids.length?ids.map(id=>artist(id)).filter(a=>a&&a.active):state.artists.filter(a=>a.active)).slice(0,3);
+    body=`<div class="site-head"><div class="site-brand">${esc(site.galleryName)}</div><div class="site-nav"><span>Artists</span><span>Our Guarantee</span><span>Contact</span></div></div><div class="site-home-hero"><div class="site-kicker">${esc(h.eyebrow||"Sedona · Arizona · Fine Art Gallery")}</div><h2>${esc(h.headline||"Fine art in the heart of Sedona.")}</h2><p>${esc(h.intro||"")}</p></div><div class="site-body"><div class="site-kicker">${esc(h.artistsEyebrow||"Artists")}</div><h3>${esc(h.artistsHeading||"Explore the collection")}</h3><p>${esc(h.artistsIntro||"")}</p><div class="site-home-artists">${featured.map(a=>`<div><img src="${esc(a.image)}" alt=""><h3>${esc(a.name)}</h3></div>`).join("")}</div></div>`;
   }
   previewFrame.innerHTML=`<div class="site-preview">${body}</div>`;if(!ui.draft)previewStatus.textContent="Saved draft";
 }
 $$(".nav-item").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.section)));
 $("#resetDemo").addEventListener("click",()=>{if(!confirm("Reset all draft and published-preview edits and restore the original full catalog?"))return;localStorage.removeItem(DRAFT_KEY);localStorage.removeItem(PUBLISHED_KEY);state=clone(baseline);ui.selectedArtistId=state.artists[0]?.id||null;ui.selectedArtworkId=state.artworks[0]?.id||null;ui.selectedPageId=state.pages[0]?.id||null;showToast("Full demo restored.");navigate("dashboard")});
 $("#publishButton").addEventListener("click",()=>{
+  if(!(state.meta.unpublishedChanges||0)) return;
   const published=clone(state);published.meta.publishedAt=new Date().toISOString();published.meta.unpublishedChanges=0;
   try{
     localStorage.setItem(PUBLISHED_KEY,JSON.stringify(published));

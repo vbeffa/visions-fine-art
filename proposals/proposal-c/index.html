@@ -17,6 +17,7 @@
       </div>
       <nav class="side-nav" aria-label="Admin sections">
         <button class="nav-item active" data-section="dashboard"><span>⌂</span> Dashboard</button>
+        <button class="nav-item" data-section="homepage"><span>⌂</span> Homepage</button>
         <button class="nav-item" data-section="artists"><span>◉</span> Artists</button>
         <button class="nav-item" data-section="artworks"><span>▧</span> Artworks</button>
         <button class="nav-item" data-section="site"><span>⚙</span> Site Info</button>
@@ -38,8 +39,8 @@
         <div class="top-actions">
           <span class="pending-pill" id="pendingPill">No unpublished changes</span>
           <button class="btn secondary" id="resetDemo">Reset Demo</button>
-          <a class="btn secondary link-btn" href="live/index.html" target="_blank" rel="noopener">Open Live Preview</a>
-          <button class="btn primary" id="publishButton">Publish Preview</button>
+          <a class="btn secondary link-btn" href="live/index.html">Open Live Preview</a>
+          <button class="btn primary" id="publishButton" disabled>Publish Preview</button>
         </div>
       </header>
 
@@ -69,7 +70,7 @@
         <span>A real Publish button would require technical validation of the gallery's hosting, backups/rollback, and a supported deployment method such as SFTP, FTP, Git, or a hosting API.</span>
       </div>
       <div class="modal-actions">
-        <a class="btn primary link-btn" href="live/index.html" target="_blank" rel="noopener">Open Published Site</a>
+        <a class="btn primary link-btn" href="live/index.html">Open Live Preview</a>
         <button class="btn secondary" value="close">Close</button>
       </div>
     </form>
