@@ -22,8 +22,27 @@ const PAGE_SIZE=50, IMAGE_PAGE_SIZE=48;
 const workspace=$("#workspace"),sectionTitle=$("#sectionTitle"),pendingPill=$("#pendingPill"),
       previewFrame=$("#previewFrame"),previewStatus=$("#previewStatus"),toast=$("#toast");
 
+const BAD_PAGE_NAV="Visions Home · · · · · · · · · · Our Guarantee Contact Us/Location Join our Mailing List";
+function repairKnownPageArtifacts(snapshot){
+  if(!snapshot?.pages||!baseline?.pages)return snapshot;
+  const baselineByPath=new Map(baseline.pages.map(p=>[p.path,p]));
+  snapshot.pages=snapshot.pages.map(p=>{
+    const b=baselineByPath.get(p.path);
+    if(!b)return p;
+    const body=(p.body||"").trim();
+    const bad=
+      body===BAD_PAGE_NAV ||
+      body.startsWith("'Unknown' by Unknown - Page") ||
+      (p.path==="aa_pedestals/"&&!body);
+    return bad?{...p,title:b.title,body:b.body}:p;
+  });
+  return snapshot;
+}
 function loadDraft(){
-  try{const s=localStorage.getItem(DRAFT_KEY);return s?JSON.parse(s):clone(baseline)}
+  try{
+    const s=localStorage.getItem(DRAFT_KEY);
+    return s?repairKnownPageArtifacts(JSON.parse(s)):clone(baseline);
+  }
   catch{return clone(baseline)}
 }
 function persist(){
@@ -31,7 +50,10 @@ function persist(){
   catch{showToast("Browser storage is full. Reset the demo or use fewer uploaded images.")}
 }
 function publishedState(){
-  try{const s=localStorage.getItem(PUBLISHED_KEY);return s?JSON.parse(s):null}catch{return null}
+  try{
+    const s=localStorage.getItem(PUBLISHED_KEY);
+    return s?repairKnownPageArtifacts(JSON.parse(s)):null;
+  }catch{return null}
 }
 // Local file:// pages do not reliably share localStorage. When the full live
 // preview is opened from this admin tab, it can request the browser-local
@@ -371,7 +393,7 @@ function renderPreview(){
     body=`${unsaved}<div class="site-head"><div class="site-brand">${esc(site.galleryName)}</div></div><div class="site-body"><div class="site-kicker">Visit the gallery</div><h2>Contact & Location</h2><div class="site-info-card"><h3>${esc(site.galleryName)}</h3><p>${esc(site.address)}<br>${esc(site.cityStateZip)}</p><p>${esc(site.phone)} · ${esc(site.tollFree)}<br>${esc(site.email)}</p><p><strong>Hours:</strong> ${esc(site.hours)}</p></div></div>`;
   }else if(ui.previewKind==="page"||ui.previewKind==="page-draft"){
     const p=ui.previewKind==="page-draft"?ui.draft:(state.pages.find(x=>x.id===ui.selectedPageId)||state.pages[0]);
-    body=`${unsaved}<div class="site-head"><div class="site-brand">${esc(site.galleryName)}</div></div><div class="site-body"><div class="site-kicker">Gallery information</div><h2>${esc(p.title)}</h2><p>${esc((p.body||"").slice(0,1600))}</p></div>`;
+    body=`${unsaved}<div class="site-head"><div class="site-brand">${esc(site.galleryName)}</div></div><div class="site-body"><div class="site-kicker">Gallery information</div><h2>${esc(p.title)}</h2><p>${esc((p.body||"").slice(0,1600)).replace(/\\n/g,"<br>")}</p></div>`;
   }else{
     const h=state.homepage||{},ids=h.featuredArtistIds||[],featured=(ids.length?ids.map(id=>artist(id)).filter(a=>a&&a.active):state.artists.filter(a=>a.active)).slice(0,3);
     body=`<div class="site-head"><div class="site-brand">${esc(site.galleryName)}</div><div class="site-nav"><span>Artists</span><span>Our Guarantee</span><span>Contact</span></div></div><div class="site-home-hero"><div class="site-kicker">${esc(h.eyebrow||"Sedona · Arizona · Fine Art Gallery")}</div><h2>${esc(h.headline||"Fine art in the heart of Sedona.")}</h2><p>${esc(h.intro||"")}</p></div><div class="site-body"><div class="site-kicker">${esc(h.artistsEyebrow||"Artists")}</div><h3>${esc(h.artistsHeading||"Explore the collection")}</h3><p>${esc(h.artistsIntro||"")}</p><div class="site-home-artists">${featured.map(a=>`<div><img src="${esc(a.image)}" alt=""><h3>${esc(a.name)}</h3></div>`).join("")}</div></div>`;

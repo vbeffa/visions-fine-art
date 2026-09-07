@@ -4,8 +4,27 @@ const BASE=window.VISIONS_FULL_DATA;
 const PUBLISHED_KEY="visions-proposal-c-published-v3";
 const $=(s,r=document)=>r.querySelector(s);
 const esc=(v="")=>String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
-let data=BASE;
-try{const s=localStorage.getItem(PUBLISHED_KEY);if(s)data=JSON.parse(s)}catch{}
+const BAD_PAGE_NAV="Visions Home · · · · · · · · · · Our Guarantee Contact Us/Location Join our Mailing List";
+function repairKnownPageArtifacts(snapshot){
+  if(!snapshot?.pages||!BASE?.pages)return snapshot;
+  const baselineByPath=new Map(BASE.pages.map(p=>[p.path,p]));
+  snapshot.pages=snapshot.pages.map(p=>{
+    const b=baselineByPath.get(p.path);
+    if(!b)return p;
+    const body=(p.body||"").trim();
+    const bad=
+      body===BAD_PAGE_NAV ||
+      body.startsWith("'Unknown' by Unknown - Page") ||
+      (p.path==="aa_pedestals/"&&!body);
+    return bad?{...p,title:b.title,body:b.body}:p;
+  });
+  return snapshot;
+}
+let data=repairKnownPageArtifacts(JSON.parse(JSON.stringify(BASE)));
+try{
+  const s=localStorage.getItem(PUBLISHED_KEY);
+  if(s)data=repairKnownPageArtifacts(JSON.parse(s));
+}catch{}
 const body=document.body, type=body.dataset.pageType, staticId=body.dataset.id||"", root=$("#liveRoot");
 const params=new URLSearchParams(location.search);
 const id=staticId||params.get("id")||"";
@@ -90,7 +109,7 @@ function boot(){
 
   const onMessage=event=>{
     if(event.source!==window.opener||event.data?.type!=="visions-published-state")return;
-    if(event.data.state)data=event.data.state;
+    if(event.data.state)data=repairKnownPageArtifacts(event.data.state);
     window.removeEventListener("message",onMessage);
     finish();
   };
