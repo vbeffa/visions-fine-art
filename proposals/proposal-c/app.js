@@ -67,6 +67,15 @@ function updatePending(){
     publish.disabled=!n;
     publish.title=n?"Publish saved changes to the browser-local live preview":"There are no unpublished changes";
   }
+
+  const reset=$("#resetDemo");
+  if(reset){
+    const hasPublishedChanges=!!publishedState();
+    reset.disabled=!hasPublishedChanges;
+    reset.title=hasPublishedChanges
+      ?"Restore the original catalog and clear the published browser-local preview"
+      :"There are no published preview changes to reset";
+  }
 }
 function navigate(section){
   ui.section=section;ui.draft=null;ui.editingArtistId=null;ui.editingArtworkId=null;ui.editingPageId=null;
