@@ -1,0 +1,46 @@
+# Proposal C — Full Catalog Website Management Portal
+
+Static GitHub Pages prototype.
+
+## Contents
+
+- 42 artists
+- 875 artwork records
+- 8 general/informational pages
+- 1736 copied catalog image assets
+- Full browsable static site under `live/`
+- Draft editing stored in localStorage
+- Separate browser-local Publish Preview state
+- Add/edit artists and artwork
+- Image replacement
+- Available / Sold / Hidden status
+- Site info and general page editing
+- Search and pagination for the complete catalog
+
+## GitHub Pages
+
+Copy the `proposal-c` folder to:
+
+    proposals/proposal-c/
+
+The admin portal will be:
+
+    https://vbeffa.github.io/visions-fine-art/proposals/proposal-c/
+
+The full published-preview site will be:
+
+    https://vbeffa.github.io/visions-fine-art/proposals/proposal-c/live/
+
+## Publishing behavior
+
+`Publish Preview` does not modify GitHub or the real Visions website. It copies the saved draft into a separate localStorage key. The static pages under `live/` read that published state, so edits appear across the full site in the same browser.
+
+This demonstrates the production workflow while keeping GitHub Pages completely static.
+
+## Reset
+
+`Reset Demo` clears both draft and published-preview localStorage and restores the original extracted catalog.
+
+## Production boundary
+
+A real production version would require validation of the hosting environment, full backup/rollback, a verified structured-site regeneration process, authentication, persistent shared storage, and a tested deployment mechanism.

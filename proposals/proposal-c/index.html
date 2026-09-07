@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Visions Fine Art — Proposal C Admin Portal</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="proposal-strip">Visions Fine Art Proposals — Proposal C: Website Management Portal</div>
+
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-mark">V</div>
+        <div><strong>Visions</strong><span>Fine Art Admin</span></div>
+      </div>
+      <nav class="side-nav" aria-label="Admin sections">
+        <button class="nav-item active" data-section="dashboard"><span>⌂</span> Dashboard</button>
+        <button class="nav-item" data-section="artists"><span>◉</span> Artists</button>
+        <button class="nav-item" data-section="artworks"><span>▧</span> Artworks</button>
+        <button class="nav-item" data-section="site"><span>⚙</span> Site Info</button>
+        <button class="nav-item" data-section="pages"><span>≡</span> Pages</button>
+        <button class="nav-item" data-section="images"><span>▣</span> Images</button>
+      </nav>
+      <div class="sidebar-scope">
+        <strong>Static prototype</strong>
+        <p>Draft and published-preview data are stored only in this browser. Nothing is sent to the real Visions website.</p>
+      </div>
+    </aside>
+
+    <div class="app-main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Proposal C prototype · full catalog</p>
+          <h1 id="sectionTitle">Dashboard</h1>
+        </div>
+        <div class="top-actions">
+          <span class="pending-pill" id="pendingPill">No unpublished changes</span>
+          <button class="btn secondary" id="resetDemo">Reset Demo</button>
+          <a class="btn secondary link-btn" href="live/index.html" target="_blank" rel="noopener">Open Live Preview</a>
+          <button class="btn primary" id="publishButton">Publish Preview</button>
+        </div>
+      </header>
+
+      <div class="content-grid">
+        <main class="workspace" id="workspace" aria-live="polite"></main>
+        <aside class="preview-panel">
+          <div class="preview-header">
+            <div><span class="preview-dot"></span><strong>Editing preview</strong></div>
+            <span id="previewStatus">Saved draft</span>
+          </div>
+          <div id="previewFrame" class="preview-frame"></div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog id="publishDialog" class="modal">
+    <form method="dialog">
+      <button class="modal-close" aria-label="Close">×</button>
+      <p class="eyebrow">Browser-local publishing</p>
+      <h2>Preview published successfully.</h2>
+      <p>The current draft has been copied into a separate published-preview state in this browser. Open the full static site to browse the published version. Other devices and browsers will continue to see the original baseline prototype.</p>
+      <div class="scope-card">
+        <strong>Production implementation: preliminary estimate $500–$1,500</strong>
+        <span>A real Publish button would require technical validation of the gallery's hosting, backups/rollback, and a supported deployment method such as SFTP, FTP, Git, or a hosting API.</span>
+      </div>
+      <div class="modal-actions">
+        <a class="btn primary link-btn" href="live/index.html" target="_blank" rel="noopener">Open Published Site</a>
+        <button class="btn secondary" value="close">Close</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="previewDialog" class="modal preview-modal">
+    <form method="dialog">
+      <button class="modal-close" aria-label="Close">×</button>
+      <p class="eyebrow">Expanded editing preview</p>
+      <div id="expandedPreview" class="expanded-preview"></div>
+    </form>
+  </dialog>
+
+  <script src="data/full-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
